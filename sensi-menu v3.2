@@ -1,0 +1,143 @@
+#!/bin/bash
+
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
+
+# Clear the terminal
+clear
+
+# ASCII Art
+echo "   d888888o.   8 8888888888   b.             8    d888888o.    8 8888 "
+echo " .\`8888:' \`88. 8 8888         888o.          8  .\`8888:' \`88.  8 8888 "
+echo " 8.\`8888.   Y8 8 8888         Y88888o.       8  8.\`8888.   Y8  8 8888 "
+echo " \`8.\`8888.     8 8888         .\`Y888888o.    8  \`8.\`8888.      8 8888 "
+echo "  \`8.\`8888.    8 888888888888 8o. \`Y888888o. 8   \`8.\`8888.     8 8888 "
+echo "   \`8.\`8888.   8 8888         8\`Y8o. \`Y88888o8    \`8.\`8888.    8 8888 "
+echo "    \`8.\`8888.  8 8888         8   \`Y8o. \`Y8888     \`8.\`8888.   8 8888 "
+echo "8b   \`8.\`8888. 8 8888         8      \`Y8o. \`Y8 8b   \`8.\`8888.  8 8888 "
+echo "\`8b.  ;8.\`8888 8 8888         8         \`Y8o.\` \`8b.  ;8.\`8888  8 8888 "
+echo " \`Y8888P ,88P' 8 888888888888 8            \`Yo  \`Y8888P ,88P'  8 8888 "
+echo ""
+echo "                               SENSI v36"
+echo "          Small Enterprise Network Security Infrastructure"
+echo ""
+echo "                          by Hansaka 'syst3m5bul1y' Costa"
+echo ""
+
+# Menu options
+options=("Update OS" "See Available Updates" "Update Raspberry Pi Firmware" "View Latest Logs" "Run Configurator" "Activate Telegram Notification Service" "Test Suricata Configuration" "Exit")
+
+# Main loop
+outerLoop=true
+while $outerLoop; do
+    # Print menu
+    PS3="Please enter your choice: "
+    select opt in "${options[@]}"; do
+        case $REPLY in
+            1)
+                echo "Updating OS..."
+                sudo apt update && sudo apt upgrade -y
+                if [[ $? -ne 0 ]]; then
+                    echo "OS update failed. Please check your network connection and try again."
+                    outerLoop=false
+                    break
+                fi
+                sudo apt dist-upgrade -y
+                if [[ $? -ne 0 ]]; then
+                    echo "OS dist-upgrade failed. Please check your network connection and try again."
+                    outerLoop=false
+                    break
+                fi
+                sudo apt autoremove -y && sudo apt autoclean -y
+                if [[ $? -ne 0 ]]; then
+                    echo "OS autoremove or autoclean failed. Please check your network connection and try again."
+                    outerLoop=false
+                    break
+                fi
+                break
+                ;;
+            2)
+                echo "Checking Available Updates..."
+                sudo apt update
+                if [[ $? -ne 0 ]]; then
+                    echo "Failed to fetch updates. Please check your network connection and try again."
+                    outerLoop=false
+                    break
+                fi
+                sudo apt list --upgradable
+                break
+                ;;
+            3)
+                echo "Updating Raspberry Pi Firmware..."
+                sudo apt-get install rpi-eeprom
+                if [[ $? -ne 0 ]]; then
+                    echo "Failed to install rpi-eeprom. Please check your network connection and try again."
+                    outerLoop=false
+                    break
+                fi
+                sudo rpi-eeprom-update -a
+                if [[ $? -ne 0 ]]; then
+                    echo "Failed to update EEPROM. Please check your network connection and try again."
+                    outerLoop=false
+                    break
+                fi
+                sudo reboot
+                break
+                ;;
+            4)
+                echo "Viewing Latest Logs..."
+                if [[ ! -f /var/log/suricata/fast.log ]]; then
+                    echo "Suricata log file not found. Please make sure Suricata is installed and running."
+                    outerLoop=false
+                    break
+                fi
+                sudo cat /var/log/suricata/fast.log
+                break
+                ;;
+            5)
+                echo "Running Configurator..."
+                if [[ ! -f /home/pi/Desktop/configurator.py ]]; then
+                    echo "Configurator file not found. Please check its location."
+                    outerLoop=false
+                    break
+                fi
+                sudo python3 /home/pi/Desktop/configurator.py
+                if [[ $? -ne 0 ]]; then
+                    echo "Failed to run Configurator. Please check the script for errors."
+                    outerLoop=false
+                    break
+                fi
+                break
+                ;;
+            6)
+                echo "Activating Telegram Notification Service..."
+                sudo systemctl restart peachpatrol.service
+                if [[ $? -ne 0 ]]; then
+                    echo "Failed to restart Telegram Notification Service. Please check the service status."
+                    outerLoop=false
+                    break
+                fi
+                break
+                ;;
+            7)
+                echo "Testing Suricata Configuration..."
+                sudo suricata -T -c /etc/suricata/suricata.yaml -v
+                if [[ $? -ne 0 ]]; then
+                    echo "Failed to test Suricata Configuration. Please check the Suricata configuration."
+                    outerLoop=false
+                    break
+                fi
+                break
+                ;;
+            8)
+                echo "Exiting..."
+                exit
+                ;;
+            *)
+                echo "Invalid option $REPLY"
+                ;;
+        esac
+    done
+done
