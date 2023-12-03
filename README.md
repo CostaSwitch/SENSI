@@ -1,4 +1,4 @@
-![image](https://github.com/syst3m5bul1y/SENSI/assets/100330775/222401e9-0b83-4ab6-b746-c1f33bbb5695)# SENSI
+# SENSI
 Small Enterprise Network Security Infrastructure - Raspberry Pi 4 + Suricata + Telegram + Python VS The World
 
 
@@ -46,6 +46,8 @@ The solution offers a fundamental level of network security by employing a Raspb
 ### HIGH LEVEL ARCHITECTURE
 
 #### KEY COMPONENETS
+
+![image](https://github.com/syst3m5bul1y/SENSI/assets/100330775/222401e9-0b83-4ab6-b746-c1f33bbb5695)
 
 - **Raspberry Pi 4 Model B (8GB)**: Act as the brains of the system, running Raspberry Pi OS (Raspbian) and offer I/O needed for IDPS functionality.
 
