@@ -47,8 +47,6 @@ The solution offers a fundamental level of network security by employing a Raspb
 
 #### KEY COMPONENETS
 
-![image](https://github.com/syst3m5bul1y/SENSI/assets/100330775/222401e9-0b83-4ab6-b746-c1f33bbb5695)
-
 - **Raspberry Pi 4 Model B (8GB)**: Act as the brains of the system, running Raspberry Pi OS (Raspbian) and offer I/O needed for IDPS functionality.
 
 * Suricata for network IDS & IPS.
